@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
-import socket from "../lib/socket";
+import { io } from "socket.io-client";
 import {
   QueueSyncPayload,
   Patient,
@@ -13,10 +13,19 @@ import {
   UpdateAvgTimePayload,
 } from "../lib/types";
 
+// ─── Socket client ───────────────────────────────────────────────────────────
+
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || "http://localhost:4001";
+
+const socket = io(SOCKET_URL, {
+  transports: ["websocket", "polling"],
+  withCredentials: true,
+});
+
 // ─── Shape of what useQueue exposes ──────────────────────────────────────────
 
 interface UseQueueReturn {
-  // State
   session: ClinicSession | null;
   patients: Patient[];
   stats: QueueStats | null;
@@ -24,13 +33,11 @@ interface UseQueueReturn {
   lastError: string | null;
   isLoading: boolean;
 
-  // Derived helpers (memoized filters — no re-computation in components)
   waitingPatients: Patient[];
   calledPatient: Patient | null;
   inConsultationPatient: Patient | null;
   activePatients: Patient[];
 
-  // Actions — each returns void, errors surface via lastError state
   addPatient: (payload: AddPatientPayload) => void;
   callNext: () => void;
   startConsultation: (patientId: string) => void;
@@ -41,7 +48,7 @@ interface UseQueueReturn {
   clearError: () => void;
 }
 
-// ─── Default avg time formatting helper (exported for components) ─────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 export function formatMs(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
@@ -70,7 +77,7 @@ export function useQueue(): UseQueueReturn {
   const [lastError, setLastError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     function onConnect() {
       setConnectionStatus("connected");
       setIsLoading(false);
@@ -87,15 +94,13 @@ export function useQueue(): UseQueueReturn {
       setLastError(`Connection failed: ${err.message}`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function onQueueSync(payload: any) {
+    function onQueueSync(payload: QueueSyncPayload) {
       setSession(payload.session);
       setPatients(payload.patients);
       setStats(payload.stats);
       setIsLoading(false);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function onQueueError(message: any) {
       setLastError(String(message));
       setTimeout(() => setLastError(null), 4000);
@@ -118,8 +123,6 @@ export function useQueue(): UseQueueReturn {
     };
   }, []);
 
-  // ─── Derived state (computed once here, not in every component) ───────────
-
   const waitingPatients = patients
     .filter((p) => p.status === PatientStatus.WAITING)
     .sort((a, b) => a.tokenNumber - b.tokenNumber);
@@ -137,8 +140,6 @@ export function useQueue(): UseQueueReturn {
         p.status === PatientStatus.IN_CONSULTATION
     )
     .sort((a, b) => a.tokenNumber - b.tokenNumber);
-
-  // ─── Actions ──────────────────────────────────────────────────────────────
 
   const addPatient = useCallback((payload: AddPatientPayload) => {
     socket.emit("patient:add", payload);

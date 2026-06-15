@@ -17,15 +17,22 @@ const app = express();
 const httpServer = http.createServer(app);
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
-// During development: allow all origins.
-// In production (Render): we'll lock this to the Vercel frontend URL via env var.
+// Allow localhost during dev + CLIENT_URL from env in production
 
-const ALLOWED_ORIGIN = process.env.FRONTEND_URL ?? "*";
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean) as string[];
 
 app.use(
   cors({
-    origin: ALLOWED_ORIGIN,
-    methods: ["GET", "POST"],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
   })
 );
 
@@ -35,16 +42,18 @@ app.use(express.json());
 
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
   cors: {
-    origin: ALLOWED_ORIGIN,
-    methods: ["GET", "POST"],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
   },
-  // Reconnection transport: polling fallback before websocket upgrade
   transports: ["websocket", "polling"],
 });
 
 // ─── In-memory queue state ────────────────────────────────────────────────────
-// Single mutable reference — all handlers share this object.
-// Reset by calling createSession() → gives a fresh QueueState.
 
 const stateRef: { current: QueueState } = {
   current: createSession(),
@@ -52,7 +61,6 @@ const stateRef: { current: QueueState } = {
 
 // ─── REST endpoints ───────────────────────────────────────────────────────────
 
-// Health check — Render pings this to keep the free instance awake
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
@@ -62,7 +70,6 @@ app.get("/health", (_req, res) => {
   });
 });
 
-// Reset session — receptionist can start a fresh day
 app.post("/reset", (_req, res) => {
   stateRef.current = createSession();
   const { getQueueStats } = require("./queueEngine");
@@ -85,6 +92,6 @@ const PORT = parseInt(process.env.PORT ?? "4000", 10);
 httpServer.listen(PORT, () => {
   console.log(`\n🚀 QueueCure+ backend running`);
   console.log(`   Port     : ${PORT}`);
-  console.log(`   CORS     : ${ALLOWED_ORIGIN}`);
+  console.log(`   Allowed  : ${allowedOrigins.join(", ")}`);
   console.log(`   Health   : http://localhost:${PORT}/health\n`);
 });

@@ -70,3 +70,39 @@ Open:
 ---
 
 ## Repo Structure
+queuecure-plus/
+├── backend/
+│ └── src/
+│ ├── index.ts # Express + Socket.io entry
+│ ├── queueEngine.ts # Pure state machine functions
+│ ├── events.ts # Socket event wiring
+│ └── types.ts # Shared TypeScript types
+├── frontend/
+│ └── src/
+│ ├── components/ # UI components
+│ ├── hooks/useQueue.ts # Socket.io + queue state
+│ ├── lib/types.ts # TypeScript interfaces
+│ └── pages/ # ReceptionistPage, PatientDisplayPage
+└── docs/
+├── thought-process.md
+├── socket-events-diagram.png
+└── requirements.md
+
+
+---
+
+## Evaluation Rubric Mapping
+
+| Criteria | Weight | How We Address It |
+|---|---|---|
+| Live queue updates without refresh | 40% | Socket.io broadcasts `queue:sync` to all clients after every state change |
+| Wait time from real data | 25% | EMA of actual `completedAt − startedAt` durations per session |
+| Receptionist screen fast + mistake-proof | 20% | Keyboard shortcuts, confirm modals for destructive actions, disabled buttons during invalid states |
+| Thought process — concurrency + edge cases | 15% | See `docs/thought-process.md` |
+
+---
+
+## Docs
+
+- [Thought Process](./docs/thought-process.md)
+- [Socket Events Diagram](./docs/socket-events-diagram.png)
