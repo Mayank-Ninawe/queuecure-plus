@@ -1,24 +1,72 @@
-# QueueCure+
+# QueueCure+ 🏥
 
-Real-time clinic queue management system built for Queue Cure '26 hackathon.
+> A deterministic, concurrency-safe queue engine for Indian clinics —
+> with live receptionist–patient sync and wait times computed from real
+> consultation data.
 
-## Stack
-- Frontend: React 18 + TypeScript + Vite + Three.js + GSAP + Framer Motion
-- Backend: Node.js + Express + Socket.io
-- Deploy: Vercel (frontend) + Render (backend)
+Built for **Queue Cure '26** hosted by Wooble Software Private Limited.
 
-## Local Setup
-```bash
-# Backend
-cd backend && npm install && npm run dev
-
-# Frontend (new terminal)
-cd frontend && npm install && npm run dev
-```
+---
 
 ## Live Demo
-_Link after deployment_
 
-## Docs
-- [Thought Process](./docs/thought-process.md)
-- [Socket Event Diagram](./docs/socket-events-diagram.png)
+| Screen | URL |
+|---|---|
+| Receptionist | `https://your-app.vercel.app/reception` |
+| Waiting Room | `https://your-app.vercel.app/waiting-room` |
+
+---
+
+## What It Does
+
+- **Receptionist view** — Add patients, call next token, start/complete/skip consultations
+- **Patient display** — Live current token, tokens ahead, estimated wait (from real data)
+- **Live sync** — Both screens update instantly via Socket.io — no refresh needed
+- **Real wait times** — Computed from actual consultation durations using EMA, never hardcoded
+- **Concurrency-safe** — Guards against double-calls, multi-tab receptionists, and reconnects
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Hosting |
+|---|---|---|
+| Frontend | React + TypeScript + Vite | Vercel (free) |
+| Backend | Node.js + Express + Socket.io | Render (free) |
+| Styling | CSS Variables + Framer Motion | — |
+| Animations | GSAP | — |
+
+---
+
+## Local Setup
+
+### Prerequisites
+- Node.js 18+
+- npm 9+
+
+### Backend
+
+```bash
+cd backend
+npm install
+cp .env.example .env    # set PORT=4001
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+# create .env.local:
+echo "VITE_SOCKET_URL=http://localhost:4001" > .env.local
+npm run dev
+```
+
+Open:
+- Receptionist: `http://localhost:5173/reception`
+- Waiting Room:  `http://localhost:5173/waiting-room`
+
+---
+
+## Repo Structure

@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
+  "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+  "build": "tsc",
+  "start": "node dist/index.js",
+  "kill": "for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :4001 ^| findstr LISTENING') do taskkill /PID %a /F"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
