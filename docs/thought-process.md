@@ -20,11 +20,12 @@ collapses the entire queue.
 ### PatientStatus — State Machine
 
 Every patient token moves through a strict one-way state machine:
-WAITING → CALLED → IN_CONSULTATION → COMPLETED
-↓ ↓
-SKIPPED CANCELLED
 
-text
+```text
+    WAITING → CALLED → IN_CONSULTATION → COMPLETED
+      ↓         ↓
+   SKIPPED   CANCELLED
+```
 
 **Invariants enforced by the server:**
 - A token can only move **forward** along valid edges — no backward transitions
@@ -67,20 +68,21 @@ per session. No hardcoded constant is ever used.
 ### Duration Logging
 
 On every `queue:complete` event:
-duration = completedAt - startedAt
 
-text
+```text
+duration = completedAt - startedAt
+```
 
 ### Exponential Moving Average (EMA)
 
 New duration is blended into a running average using EMA (α = 0.3):
+
+```text
 if (completedCount === 0):
-avgConsultationMs = duration // first sample — use directly
-
+  avgConsultationMs = duration // first sample — use directly
 else:
-avgConsultationMs = 0.7 × prevAvg + 0.3 × duration
-
-text
+  avgConsultationMs = 0.7 × prevAvg + 0.3 × duration
+```
 
 EMA gives more weight to recent consultations (fast doctors, slow days)
 rather than treating all historical data equally.
@@ -88,9 +90,10 @@ rather than treating all historical data equally.
 ### Per-Patient Estimate
 
 For a patient with `k` tokens ahead of them in WAITING status:
-estimatedWaitMs = k × avgConsultationMs
 
-text
+```text
+estimatedWaitMs = k × avgConsultationMs
+```
 
 **Example:**
 - 3 consultations done: 5m, 8m, 6m → avg ≈ 6.5m
@@ -105,27 +108,28 @@ in real time as consultations finish faster or slower.
 ## 4. Socket Event Architecture
 
 ### Event Flow
-Receptionist Browser Backend (queue engine) Patient Browser
-│ │ │
-│── patient:add ────────────────────────>│ │
-│ │── addPatient() ────────────── │
-│ │── broadcast queue:sync ───────>│
-│<──────────────────── queue:sync ───────│<──────────────────────────────>│
-│ │ │
-│── queue:call_next ─────────────────────>│ │
-│ │── callNext() ──────────────── │
-│ │── broadcast queue:sync ───────>│
-│<──────────────────── queue:sync ───────│<──────────────────────────────>│
-│ │ │
-│── queue:start ─────────────────────────>│ │
-│── queue:complete ───────────────────────>│ (logs duration, updates EMA) │
-│── queue:skip ───────────────────────────>│ │
-│── queue:cancel ─────────────────────────>│ │
-│ │ │
-│── queue:sync_request ──────────────────>│ (on reconnect) │
-│<──────────────────── queue:sync ───────│ │
 
-text
+```text
+Receptionist Browser         Backend (queue engine)           Patient Browser
+         │                              │                             │
+         │── patient:add ──────────────>│                             │
+         │                              │── addPatient() ──────────── │
+         │                              │── broadcast queue:sync ────>│
+         │<──────── queue:sync ─────────│<───────────────────────────>│
+         │                              │                             │
+         │── queue:call_next ──────────>│                             │
+         │                              │── callNext() ────────────── │
+         │                              │── broadcast queue:sync ────>│
+         │<──────── queue:sync ─────────│<───────────────────────────>│
+         │                              │                             │
+         │── queue:start ──────────────>│                             │
+         │── queue:complete ───────────>│ (logs duration, updates EMA)│
+         │── queue:skip ───────────────>│                             │
+         │── queue:cancel ─────────────>│                             │
+         │                              │                             │
+         │── queue:sync_request ───────>│ (on reconnect)              │
+         │<──────── queue:sync ─────────│                             │
+```
 
 ### Broadcast Model
 
