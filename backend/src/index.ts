@@ -16,19 +16,27 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL ? process.env.FRONTEND_URL.trim().replace(/\/$/, '') : "",
 ].filter((origin): origin is string => Boolean(origin));
 
 const corsOriginValidator = (
   origin: string | undefined,
   callback: (err: Error | null, allow?: boolean) => void
 ) => {
-  if (!origin || allowedOrigins.includes(origin)) {
+  if (!origin) {
     callback(null, true);
     return;
   }
-
-  callback(new Error(`Not allowed by CORS: ${origin}`));
+  
+  if (
+    origin.includes('localhost') || 
+    origin.includes('vercel.app') || 
+    (process.env.FRONTEND_URL && origin.includes(process.env.FRONTEND_URL.trim().replace(/\/$/, '')))
+  ) {
+    callback(null, true);
+  } else {
+    callback(new Error(`Not allowed by CORS: ${origin}`));
+  }
 };
 
 app.use(
