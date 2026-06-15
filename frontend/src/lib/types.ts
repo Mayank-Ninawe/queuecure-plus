@@ -77,6 +77,21 @@ export interface UpdateAvgTimePayload {
   avgConsultationMs: number;
 }
 
+export interface ServerToClientEvents {
+  "queue:sync": (payload: QueueSyncPayload) => void;
+  "queue:error": (message: string) => void;
+}
+
+export interface ClientToServerEvents {
+  "queue:sync_request": () => void;
+  "patient:add": (payload: AddPatientPayload) => void;
+  "queue:call_next": () => void;
+  "queue:start": (payload: PatientActionPayload) => void;
+  "queue:complete": (payload: PatientActionPayload) => void;
+  "queue:skip": (payload: PatientActionPayload) => void;
+  "queue:cancel": (payload: PatientActionPayload) => void;
+  "queue:update_avg_time": (payload: UpdateAvgTimePayload) => void;
+}
 // ─── UI State ─────────────────────────────────────────────────────────────────
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";

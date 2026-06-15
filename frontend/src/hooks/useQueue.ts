@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useCallback } from "react";
-import { io } from "socket.io-client";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import socket from "../lib/socket";
 import {
   QueueSyncPayload,
   Patient,
@@ -12,18 +11,6 @@ import {
   PatientActionPayload,
   UpdateAvgTimePayload,
 } from "../lib/types";
-
-// ─── Socket client ───────────────────────────────────────────────────────────
-
-const SOCKET_URL =
-  import.meta.env.VITE_SOCKET_URL || "http://localhost:4001";
-
-const socket = io(SOCKET_URL, {
-  transports: ["websocket", "polling"],
-  withCredentials: true,
-});
-
-// ─── Shape of what useQueue exposes ──────────────────────────────────────────
 
 interface UseQueueReturn {
   session: ClinicSession | null;
@@ -48,98 +35,142 @@ interface UseQueueReturn {
   clearError: () => void;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 export function formatMs(ms: number): string {
+  if (!Number.isFinite(ms) || ms <= 0) return "—";
+
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
+
   if (minutes === 0) return `${seconds}s`;
   if (seconds === 0) return `${minutes}m`;
   return `${minutes}m ${seconds}s`;
 }
 
 export function formatWait(ms: number): string {
-  if (ms <= 0) return "Next up";
+  if (!Number.isFinite(ms) || ms <= 0) return "Next up";
+
   const minutes = Math.round(ms / 60000);
+
   if (minutes < 1) return "< 1 min";
   if (minutes === 1) return "~1 min";
   return `~${minutes} mins`;
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 export function useQueue(): UseQueueReturn {
   const [session, setSession] = useState<ClinicSession | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [stats, setStats] = useState<QueueStats | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>("connecting");
   const [lastError, setLastError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    function onConnect() {
-      setConnectionStatus("connected");
-      setIsLoading(false);
-      socket.emit("queue:sync_request");
+  const errorTimeoutRef = useRef<number | null>(null);
+
+  const clearScheduledError = useCallback(() => {
+    if (errorTimeoutRef.current !== null) {
+      window.clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = null;
     }
-
-    function onDisconnect(reason: string) {
-      console.warn("[socket] Disconnected:", reason);
-      setConnectionStatus("disconnected");
-    }
-
-    function onConnectError(err: Error) {
-      setConnectionStatus("error");
-      setLastError(`Connection failed: ${err.message}`);
-    }
-
-    function onQueueSync(payload: QueueSyncPayload) {
-      setSession(payload.session);
-      setPatients(payload.patients);
-      setStats(payload.stats);
-      setIsLoading(false);
-    }
-
-    function onQueueError(message: any) {
-      setLastError(String(message));
-      setTimeout(() => setLastError(null), 4000);
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("connect_error", onConnectError);
-    socket.on("queue:sync", onQueueSync);
-    socket.on("queue:error", onQueueError);
-
-    if (socket.connected) onConnect();
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("connect_error", onConnectError);
-      socket.off("queue:sync", onQueueSync);
-      socket.off("queue:error", onQueueError);
-    };
   }, []);
 
-  const waitingPatients = patients
-    .filter((p) => p.status === PatientStatus.WAITING)
-    .sort((a, b) => a.tokenNumber - b.tokenNumber);
+  const showTemporaryError = useCallback(
+    (message: string) => {
+      clearScheduledError();
+      setLastError(message);
+      errorTimeoutRef.current = window.setTimeout(() => {
+        setLastError(null);
+        errorTimeoutRef.current = null;
+      }, 4000);
+    },
+    [clearScheduledError]
+  );
 
-  const calledPatient = patients.find((p) => p.status === PatientStatus.CALLED) ?? null;
+  useEffect(() => {
+  function onConnect() {
+    setConnectionStatus("connected");
+    setIsLoading(false);
+    socket.emit("queue:sync_request");
+  }
 
-  const inConsultationPatient =
-    patients.find((p) => p.status === PatientStatus.IN_CONSULTATION) ?? null;
+  function onDisconnect(reason: string) {
+    console.warn("[socket] Disconnected:", reason);
+    setConnectionStatus("disconnected");
+  }
 
-  const activePatients = patients
-    .filter(
-      (p) =>
-        p.status === PatientStatus.WAITING ||
-        p.status === PatientStatus.CALLED ||
-        p.status === PatientStatus.IN_CONSULTATION
-    )
-    .sort((a, b) => a.tokenNumber - b.tokenNumber);
+  function onConnectError(err: Error) {
+    console.error("[socket] Connection error:", err.message);
+    setConnectionStatus("error");
+    setIsLoading(false);
+    showTemporaryError(`Connection failed: ${err.message}`);
+  }
+
+  function onQueueSync(payload: QueueSyncPayload) {
+    setSession(payload.session);
+    setPatients(payload.patients);
+    setStats(payload.stats);
+    setIsLoading(false);
+    setConnectionStatus("connected");
+  }
+
+  function onQueueError(message: string) {
+    showTemporaryError(String(message));
+  }
+
+  socket.on("connect", onConnect);
+  socket.on("disconnect", onDisconnect);
+  socket.on("connect_error", onConnectError);
+  socket.on("queue:sync", onQueueSync);
+  socket.on("queue:error", onQueueError);
+
+  if (socket.connected) {
+    onConnect();
+  } else {
+    socket.connect();
+  }
+
+  return () => {
+    socket.off("connect", onConnect);
+    socket.off("disconnect", onDisconnect);
+    socket.off("connect_error", onConnectError);
+    socket.off("queue:sync", onQueueSync);
+    socket.off("queue:error", onQueueError);
+    clearScheduledError();
+  };
+}, [clearScheduledError, showTemporaryError]);
+
+  const waitingPatients = useMemo(
+    () =>
+      patients
+        .filter((p) => p.status === PatientStatus.WAITING)
+        .sort((a, b) => a.tokenNumber - b.tokenNumber),
+    [patients]
+  );
+
+  const calledPatient = useMemo(
+    () => patients.find((p) => p.status === PatientStatus.CALLED) ?? null,
+    [patients]
+  );
+
+  const inConsultationPatient = useMemo(
+    () =>
+      patients.find((p) => p.status === PatientStatus.IN_CONSULTATION) ?? null,
+    [patients]
+  );
+
+  const activePatients = useMemo(
+    () =>
+      patients
+        .filter(
+          (p) =>
+            p.status === PatientStatus.WAITING ||
+            p.status === PatientStatus.CALLED ||
+            p.status === PatientStatus.IN_CONSULTATION
+        )
+        .sort((a, b) => a.tokenNumber - b.tokenNumber),
+    [patients]
+  );
 
   const addPatient = useCallback((payload: AddPatientPayload) => {
     socket.emit("patient:add", payload);
@@ -174,7 +205,10 @@ export function useQueue(): UseQueueReturn {
     socket.emit("queue:update_avg_time", payload);
   }, []);
 
-  const clearError = useCallback(() => setLastError(null), []);
+  const clearError = useCallback(() => {
+    clearScheduledError();
+    setLastError(null);
+  }, [clearScheduledError]);
 
   return {
     session,

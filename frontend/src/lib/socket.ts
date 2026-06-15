@@ -1,15 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { io, Socket } from "socket.io-client";
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "./types";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:4001";
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || "http://localhost:4001";
 
-export const socket: Socket<any, any> = io(BACKEND_URL, {
-  transports: ["websocket", "polling"],
-  autoConnect: true,
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
-});
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+  SOCKET_URL,
+  {
+    autoConnect: false,
+    withCredentials: true,
+    transports: ["polling", "websocket"],
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 1000,
+    timeout: 20000,
+  }
+);
 
 export default socket;
