@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import http from "http";
-import { Server } from "socket.io";
 import cors from "cors";
+import { Server } from "socket.io";
 import { createSession } from "./queueEngine";
 import { registerHandlers } from "./socketHandlers";
 import {
@@ -14,14 +14,14 @@ import {
 // ─── App bootstrap ────────────────────────────────────────────────────────────
 
 const app = express();
-const httpServer = http.createServer(app);
+const server = http.createServer(app);
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
-// Allow localhost during dev + CLIENT_URL from env in production
+// Allow localhost during dev + FRONTEND_URL from env in production
 
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
 ].filter(Boolean) as string[];
 
 app.use(
@@ -40,7 +40,7 @@ app.use(express.json());
 
 // ─── Socket.io server ─────────────────────────────────────────────────────────
 
-const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
     origin(origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
@@ -61,6 +61,12 @@ const stateRef: { current: QueueState } = {
 
 // ─── REST endpoints ───────────────────────────────────────────────────────────
 
+// Root check
+app.get("/", (_req, res) => {
+  res.send("QueueCure+ backend is running");
+});
+
+// Health check
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
@@ -70,6 +76,7 @@ app.get("/health", (_req, res) => {
   });
 });
 
+// Reset session
 app.post("/reset", (_req, res) => {
   stateRef.current = createSession();
   const { getQueueStats } = require("./queueEngine");
@@ -87,9 +94,9 @@ io.on("connection", (socket) => {
 
 // ─── Start server ─────────────────────────────────────────────────────────────
 
-const PORT = parseInt(process.env.PORT ?? "4000", 10);
+const PORT = Number(process.env.PORT) || 4001;
 
-httpServer.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`\n🚀 QueueCure+ backend running`);
   console.log(`   Port     : ${PORT}`);
   console.log(`   Allowed  : ${allowedOrigins.join(", ")}`);
