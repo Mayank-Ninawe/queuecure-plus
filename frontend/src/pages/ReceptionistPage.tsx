@@ -10,6 +10,7 @@ import ActionButtons from "../components/ActionButtons";
 import AvgTimeEditor from "../components/AvgTimeEditor";
 import ConfirmModal from "../components/ConfirmModal";
 import ErrorToast from "../components/ErrorToast";
+import OperationalSummaryStrip from "../components/OperationalSummaryStrip";
 import { Patient } from "../lib/types";
 
 const pageVariants = {
@@ -183,6 +184,21 @@ export default function ReceptionistPage() {
             </a>
           </div>
         </header>
+
+        {/* Operational Summary Strip */}
+        <div
+          style={{
+            maxWidth: "var(--content-wide)",
+            width: "100%",
+            margin: "0 auto",
+            padding: "var(--space-6) var(--space-6) 0 var(--space-6)",
+          }}
+        >
+          <OperationalSummaryStrip
+            waitingPatients={waitingPatients}
+            stats={stats}
+          />
+        </div>
 
         {/* Main content */}
         <main
