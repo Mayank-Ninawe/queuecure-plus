@@ -122,25 +122,26 @@ export default function ReceptionistPage() {
         {/* Header */}
         <header
           style={{
-            padding: "var(--space-4) var(--space-6)",
-            borderBottom: "1px solid var(--color-border)",
+            padding: "var(--space-4) var(--space-8)",
+            borderBottom: "1.5px solid var(--color-border)",
             display: "flex",
             alignItems: "center",
             gap: "var(--space-3)",
             background: "var(--color-surface)",
             position: "sticky",
             top: 0,
-            zIndex: 10,
+            zIndex: 100,
+            boxShadow: "var(--shadow-sm)",
           }}
         >
-          <Logo size={28} />
+          <Logo size={30} />
           <span
             style={{
               fontFamily: "var(--font-display)",
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: "var(--text-base)",
               color: "var(--color-text)",
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.02em",
             }}
           >
             QueueCure<span style={{ color: "var(--color-primary)" }}>+</span>
@@ -148,18 +149,20 @@ export default function ReceptionistPage() {
           <span
             style={{
               marginLeft: "var(--space-2)",
-              fontSize: "var(--text-xs)",
-              color: "var(--color-text-faint)",
-              padding: "2px var(--space-2)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-sm)",
+              fontSize: "10px",
+              color: "var(--color-text-muted)",
+              padding: "3px var(--space-3)",
+              background: "var(--color-surface-3)",
+              border: "1.5px solid var(--color-border)",
+              borderRadius: "var(--radius-md)",
               textTransform: "uppercase",
-              letterSpacing: "0.06em",
+              letterSpacing: "0.08em",
+              fontWeight: 700,
             }}
           >
-            Receptionist
+            Reception Console
           </span>
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "var(--space-6)" }}>
             {stats && (
               <AvgTimeEditor
                 currentAvgMs={stats.avgConsultationMs}
@@ -173,11 +176,20 @@ export default function ReceptionistPage() {
               style={{
                 fontSize: "var(--text-xs)",
                 color: "var(--color-primary)",
-                fontWeight: 600,
+                fontWeight: 700,
                 textDecoration: "none",
-                padding: "var(--space-1) var(--space-3)",
-                border: "1px solid var(--color-primary)",
-                borderRadius: "var(--radius-sm)",
+                padding: "var(--space-2) var(--space-4)",
+                border: "1.5px solid var(--color-primary)",
+                borderRadius: "var(--radius-md)",
+                background: "transparent",
+                letterSpacing: "0.02em",
+                boxShadow: "var(--shadow-sm)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-primary-dim)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
               }}
             >
               Open Waiting Room ↗
@@ -191,7 +203,7 @@ export default function ReceptionistPage() {
             maxWidth: "var(--content-wide)",
             width: "100%",
             margin: "0 auto",
-            padding: "var(--space-6) var(--space-6) 0 var(--space-6)",
+            padding: "var(--space-8) var(--space-8) 0 var(--space-8)",
           }}
         >
           <OperationalSummaryStrip
@@ -207,15 +219,15 @@ export default function ReceptionistPage() {
             maxWidth: "var(--content-wide)",
             width: "100%",
             margin: "0 auto",
-            padding: "var(--space-6)",
+            padding: "var(--space-8)",
             display: "grid",
-            gridTemplateColumns: "1fr 2fr",
-            gap: "var(--space-6)",
+            gridTemplateColumns: "1.1fr 2fr",
+            gap: "var(--space-8)",
             alignItems: "start",
           }}
         >
           {/* Left column: stats + add form */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)", position: "sticky", top: "calc(60px + var(--space-6))" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)", position: "sticky", top: "calc(74px + var(--space-8))" }}>
             <StatsBar stats={stats} />
             <AddPatientForm
               onAdd={(name, phone, priorityFlag) => addPatient({ name, phone, priorityFlag })}
@@ -224,7 +236,7 @@ export default function ReceptionistPage() {
           </div>
 
           {/* Right column: action buttons + queue list */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
             <ActionButtons
               waitingCount={waitingPatients.length}
               calledPatient={calledPatient}
@@ -236,29 +248,33 @@ export default function ReceptionistPage() {
             />
 
             {/* Queue header */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1.5px solid var(--color-border)", paddingBottom: "var(--space-2)" }}>
               <h2 style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "var(--text-base)",
-                fontWeight: 600,
-                color: "var(--color-text-muted)",
+                fontWeight: 700,
+                color: "var(--color-text)",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-2)",
               }}>
-                Queue — {patients.length} patients
+                <span style={{ width: 4, height: 16, background: "var(--color-primary)", borderRadius: "var(--radius-full)" }} />
+                Patient Queue — {patients.length} total
               </h2>
               {stats && stats.avgConsultationMs > 0 && (
-                <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-faint)" }}>
-                  avg {formatMs(stats.avgConsultationMs)} / patient
+                <span className="tabular" style={{ fontSize: "var(--text-xs)", color: "var(--color-text-faint)", fontWeight: 500 }}>
+                  EMA Average: {formatMs(stats.avgConsultationMs)} / patient
                 </span>
               )}
             </div>
 
             {/* Loading skeleton */}
             {isLoading ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="skeleton" style={{ height: 72, borderRadius: "var(--radius-lg)" }} />
+                  <div key={i} className="skeleton" style={{ height: 74, borderRadius: "var(--radius-lg)" }} />
                 ))}
               </div>
             ) : (
@@ -276,8 +292,8 @@ export default function ReceptionistPage() {
 
         {/* Responsive: stack columns on mobile */}
         <style>{`
-          @media (max-width: 768px) {
-            main { grid-template-columns: 1fr !important; }
+          @media (max-width: 868px) {
+            main { grid-template-columns: 1fr !important; gap: var(--space-6) !important; }
             main > div:first-child { position: static !important; }
           }
         `}</style>

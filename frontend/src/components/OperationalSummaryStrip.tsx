@@ -19,31 +19,32 @@ export default function OperationalSummaryStrip({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
         gap: "var(--space-4)",
         width: "100%",
-        marginBottom: "var(--space-2)",
+        marginBottom: "var(--space-4)",
       }}
     >
       {/* 1. Patients Waiting Card */}
       <div
+        className="tactile-card"
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "var(--space-1)",
-          padding: "var(--space-4) var(--space-5)",
-          background: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-xl)",
+          padding: "var(--space-5) var(--space-6)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "var(--color-primary)" }} />
         <span
           style={{
-            fontSize: "var(--text-xs)",
+            fontSize: "10px",
             color: "var(--color-text-muted)",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
-            fontWeight: 600,
+            fontWeight: 700,
           }}
         >
           Patients Waiting
@@ -55,7 +56,7 @@ export default function OperationalSummaryStrip({
             fontSize: "var(--text-xl)",
             fontWeight: 700,
             color: "var(--color-text)",
-            lineHeight: 1.2,
+            lineHeight: 1.1,
             margin: "var(--space-1) 0",
           }}
         >
@@ -68,29 +69,30 @@ export default function OperationalSummaryStrip({
             fontWeight: 500,
           }}
         >
-          currently in queue
+          currently in active queue
         </span>
       </div>
 
       {/* 2. Avg Consultation Card */}
       <div
+        className="tactile-card"
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "var(--space-1)",
-          padding: "var(--space-4) var(--space-5)",
-          background: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-xl)",
+          padding: "var(--space-5) var(--space-6)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "var(--color-info)" }} />
         <span
           style={{
-            fontSize: "var(--text-xs)",
+            fontSize: "10px",
             color: "var(--color-text-muted)",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
-            fontWeight: 600,
+            fontWeight: 700,
           }}
         >
           Avg Consultation
@@ -102,7 +104,7 @@ export default function OperationalSummaryStrip({
             fontSize: "var(--text-xl)",
             fontWeight: 700,
             color: avgConsultationMs > 0 ? "var(--color-info)" : "var(--color-text-faint)",
-            lineHeight: 1.2,
+            lineHeight: 1.1,
             margin: "var(--space-1) 0",
           }}
         >
@@ -115,29 +117,30 @@ export default function OperationalSummaryStrip({
             fontWeight: 500,
           }}
         >
-          based on completed visits
+          moving average duration
         </span>
       </div>
 
       {/* 3. Estimated Queue Clearance Card */}
       <div
+        className="tactile-card"
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "var(--space-1)",
-          padding: "var(--space-4) var(--space-5)",
-          background: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-xl)",
+          padding: "var(--space-5) var(--space-6)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "var(--color-warning)" }} />
         <span
           style={{
-            fontSize: "var(--text-xs)",
+            fontSize: "10px",
             color: "var(--color-text-muted)",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
-            fontWeight: 600,
+            fontWeight: 700,
           }}
         >
           Queue Clearance
@@ -148,8 +151,8 @@ export default function OperationalSummaryStrip({
             fontFamily: "var(--font-display)",
             fontSize: "var(--text-xl)",
             fontWeight: 700,
-            color: avgConsultationMs > 0 ? "var(--color-primary)" : "var(--color-text-faint)",
-            lineHeight: 1.2,
+            color: avgConsultationMs > 0 ? "var(--color-warning)" : "var(--color-text-faint)",
+            lineHeight: 1.1,
             margin: "var(--space-1) 0",
           }}
         >
@@ -162,29 +165,30 @@ export default function OperationalSummaryStrip({
             fontWeight: 500,
           }}
         >
-          for current waiting list
+          est. time to empty queue
         </span>
       </div>
 
       {/* 4. Priority Patients Card */}
       <div
+        className="tactile-card"
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "var(--space-1)",
-          padding: "var(--space-4) var(--space-5)",
-          background: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-xl)",
+          padding: "var(--space-5) var(--space-6)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "var(--color-status-skipped)" }} />
         <span
           style={{
-            fontSize: "var(--text-xs)",
+            fontSize: "10px",
             color: "var(--color-text-muted)",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
-            fontWeight: 600,
+            fontWeight: 700,
           }}
         >
           Priority Patients
@@ -196,7 +200,7 @@ export default function OperationalSummaryStrip({
             fontSize: "var(--text-xl)",
             fontWeight: 700,
             color: priorityCount > 0 ? "var(--color-status-skipped)" : "var(--color-text)",
-            lineHeight: 1.2,
+            lineHeight: 1.1,
             margin: "var(--space-1) 0",
           }}
         >
@@ -209,7 +213,7 @@ export default function OperationalSummaryStrip({
             fontWeight: 500,
           }}
         >
-          senior/emergency tokens
+          senior & emergency tokens
         </span>
       </div>
     </div>

@@ -38,69 +38,89 @@ export default function AddPatientForm({ onAdd, disabled }: Props) {
     width: "100%",
     padding: "var(--space-3) var(--space-4)",
     borderRadius: "var(--radius-md)",
-    border: "1px solid var(--color-border)",
+    border: "1.5px solid var(--color-border)",
     background: "var(--color-surface-2)",
     color: "var(--color-text)",
     fontSize: "var(--text-sm)",
     outline: "none",
-    transition: "border-color var(--transition-fast)",
+    boxShadow: "inset 0 1px 2px rgba(35, 38, 41, 0.02)",
+    transition: "all var(--transition-fast)",
   };
 
   return (
     <form
       onSubmit={handleSubmit}
+      className="tactile-card"
       style={{
-        background: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-xl)",
         padding: "var(--space-6)",
         display: "flex",
         flexDirection: "column",
-        gap: "var(--space-4)",
+        gap: "var(--space-5)",
+        position: "relative",
       }}
     >
-      <h2 style={{
-        fontFamily: "var(--font-display)",
-        fontSize: "var(--text-base)",
-        fontWeight: 600,
-        color: "var(--color-text)",
-      }}>
-        Add Patient
-      </h2>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <span style={{ fontSize: "1.2rem" }}>📝</span>
+        <h2 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "var(--text-base)",
+          fontWeight: 700,
+          color: "var(--color-text)",
+          letterSpacing: "-0.01em",
+        }}>
+          Patient Check-In Pad
+        </h2>
+      </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
         <div>
-          <label htmlFor="patient-name" style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", display: "block", marginBottom: "var(--space-1)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Name *
+          <label htmlFor="patient-name" style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", display: "block", marginBottom: "var(--space-1)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Patient Name *
           </label>
           <input
             id="patient-name"
             ref={nameRef}
             type="text"
-            placeholder="Patient name"
+            placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             disabled={disabled}
             style={inputStyle}
-            onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
-            onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
+            onFocus={(e) => {
+              e.target.style.borderColor = "var(--color-primary)";
+              e.target.style.boxShadow = "0 0 0 3px var(--color-primary-glow), inset 0 1px 2px rgba(35, 38, 41, 0.02)";
+              e.target.style.background = "var(--color-surface)";
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = "var(--color-border)";
+              e.target.style.boxShadow = "inset 0 1px 2px rgba(35, 38, 41, 0.02)";
+              e.target.style.background = "var(--color-surface-2)";
+            }}
           />
         </div>
         <div>
-          <label htmlFor="patient-phone" style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", display: "block", marginBottom: "var(--space-1)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Phone
+          <label htmlFor="patient-phone" style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", display: "block", marginBottom: "var(--space-1)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Contact Number
           </label>
           <input
             id="patient-phone"
             type="tel"
-            placeholder="10-digit number"
+            placeholder="10-digit phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             disabled={disabled}
             style={inputStyle}
-            onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
-            onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
+            onFocus={(e) => {
+              e.target.style.borderColor = "var(--color-primary)";
+              e.target.style.boxShadow = "0 0 0 3px var(--color-primary-glow), inset 0 1px 2px rgba(35, 38, 41, 0.02)";
+              e.target.style.background = "var(--color-surface)";
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = "var(--color-border)";
+              e.target.style.boxShadow = "inset 0 1px 2px rgba(35, 38, 41, 0.02)";
+              e.target.style.background = "var(--color-surface-2)";
+            }}
           />
         </div>
       </div>
@@ -113,6 +133,11 @@ export default function AddPatientForm({ onAdd, disabled }: Props) {
           gap: "var(--space-3)",
           cursor: "pointer",
           userSelect: "none",
+          background: priority ? "rgba(178, 94, 2, 0.03)" : "transparent",
+          padding: "var(--space-2)",
+          borderRadius: "var(--radius-md)",
+          border: `1.5px solid ${priority ? "rgba(178, 94, 2, 0.2)" : "transparent"}`,
+          transition: "all var(--transition-fast)",
         }}
       >
         <div
@@ -122,31 +147,36 @@ export default function AddPatientForm({ onAdd, disabled }: Props) {
           onClick={() => setPriority((p) => !p)}
           onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") setPriority((p) => !p); }}
           style={{
-            width: 40,
-            height: 22,
+            width: 44,
+            height: 24,
             borderRadius: "var(--radius-full)",
-            background: priority ? "var(--color-primary)" : "var(--color-surface-offset)",
-            border: "1px solid var(--color-border)",
+            background: priority ? "var(--color-warning)" : "var(--color-surface-3)",
+            border: "1.5px solid var(--color-border)",
             position: "relative",
-            transition: "background var(--transition-fast)",
+            transition: "all var(--transition-fast)",
             flexShrink: 0,
           }}
         >
           <div style={{
             position: "absolute",
             top: 2,
-            left: priority ? 20 : 2,
-            width: 16,
-            height: 16,
+            left: priority ? 22 : 2,
+            width: 17,
+            height: 17,
             borderRadius: "var(--radius-full)",
             background: "#fff",
             transition: "left var(--transition-fast)",
             boxShadow: "var(--shadow-sm)",
           }} />
         </div>
-        <span style={{ fontSize: "var(--text-sm)", color: priority ? "var(--color-primary)" : "var(--color-text-muted)", fontWeight: priority ? 600 : 400 }}>
-          Priority (Emergency / Senior)
-        </span>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span style={{ fontSize: "var(--text-sm)", color: priority ? "var(--color-warning)" : "var(--color-text)", fontWeight: 700 }}>
+            Priority Enrollment
+          </span>
+          <span style={{ fontSize: "10px", color: "var(--color-text-faint)" }}>
+            For emergency cases, seniors, or disabled patients
+          </span>
+        </div>
       </label>
 
       <button
@@ -163,8 +193,23 @@ export default function AddPatientForm({ onAdd, disabled }: Props) {
           fontWeight: 700,
           letterSpacing: "0.02em",
           cursor: disabled || !name.trim() ? "not-allowed" : "pointer",
-          transition: "background var(--transition-fast)",
+          transition: "all var(--transition-fast)",
           alignSelf: "flex-start",
+          boxShadow: disabled || !name.trim() ? "none" : "var(--shadow-amber)",
+        }}
+        onMouseEnter={(e) => {
+          if (!disabled && name.trim()) {
+            e.currentTarget.style.background = "var(--color-primary-hover)";
+            e.currentTarget.style.boxShadow = "var(--shadow-amber-lg)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled && name.trim()) {
+            e.currentTarget.style.background = "var(--color-primary)";
+            e.currentTarget.style.boxShadow = "var(--shadow-amber)";
+            e.currentTarget.style.transform = "none";
+          }
         }}
       >
         Add to Queue ↵

@@ -15,7 +15,7 @@ const config: Record<ConnectionStatus, { label: string; bg: string; color: strin
   },
   disconnected: {
     label: "⚠ Disconnected — trying to reconnect…",
-    bg: "rgba(245,158,11,0.12)",
+    bg: "var(--color-warning-dim)",
     color: "var(--color-warning)",
   },
   error: {
@@ -56,13 +56,13 @@ export default function ConnectionBanner({ status }: Props) {
           {showColdStart && status !== "connected" && (
             <div
               style={{
-                background: "rgba(245, 158, 11, 0.15)",
-                color: "var(--color-primary)",
+                background: "var(--color-warning-dim)",
+                color: "var(--color-warning)",
                 textAlign: "center",
                 padding: "var(--space-2) var(--space-4)",
                 fontSize: "var(--text-sm)",
-                fontWeight: 600,
-                borderBottom: "1px solid var(--color-border)",
+                fontWeight: 700,
+                borderBottom: "1.5px solid var(--color-border)",
               }}
             >
               ⏳ Backend is waking up, please wait ~15 seconds...

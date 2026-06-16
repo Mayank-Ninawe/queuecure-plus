@@ -46,63 +46,92 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
 
   const cardStyle: React.CSSProperties = {
     background: patient.status === PatientStatus.IN_CONSULTATION
-      ? "rgba(16,185,129,0.05)"
+      ? "var(--color-status-consultation-dim)"
       : patient.status === PatientStatus.CALLED
-      ? "rgba(245,158,11,0.05)"
-      : "var(--glass-bg)",
-    border: `1px solid ${
+      ? "var(--color-status-called-dim)"
+      : "var(--color-surface)",
+    border: `1.5px solid ${
       patient.status === PatientStatus.IN_CONSULTATION
-        ? "rgba(16,185,129,0.2)"
+        ? "var(--color-status-consultation)"
         : patient.status === PatientStatus.CALLED
-        ? "rgba(245,158,11,0.2)"
-        : "var(--glass-border)"
+        ? "var(--color-status-called)"
+        : "var(--color-border)"
     }`,
+    borderLeft: `4px solid ${
+      patient.status === PatientStatus.IN_CONSULTATION
+        ? "var(--color-status-consultation)"
+        : patient.status === PatientStatus.CALLED
+        ? "var(--color-status-called)"
+        : patient.status === PatientStatus.WAITING
+        ? "var(--color-primary)"
+        : patient.status === PatientStatus.COMPLETED
+        ? "var(--color-status-completed)"
+        : patient.status === PatientStatus.SKIPPED
+        ? "var(--color-status-skipped)"
+        : "var(--color-status-cancelled)"
+    }`,
+    boxShadow: "var(--shadow-sm)",
     borderRadius: "var(--radius-lg)",
-    padding: "var(--space-4) var(--space-5)",
+    padding: "var(--space-3) var(--space-5)",
     display: "flex",
     alignItems: "center",
     gap: "var(--space-4)",
-    backdropFilter: "blur(8px)",
-    WebkitBackdropFilter: "blur(8px)",
-    opacity: isActive ? 1 : 0.5,
-    transition: "border-color var(--transition-base), background var(--transition-base)",
+    opacity: isActive ? 1 : 0.65,
+    transition: "all var(--transition-base)",
   };
 
   const btnBase: React.CSSProperties = {
-    padding: "var(--space-2) var(--space-4)",
-    minHeight: "44px",
-    minWidth: "44px",
+    padding: "var(--space-1) var(--space-3)",
+    minHeight: "36px",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: "var(--radius-sm)",
-    border: "1px solid var(--color-border)",
-    fontSize: "var(--text-xs)",
-    fontWeight: 600,
+    borderRadius: "var(--radius-md)",
+    border: "1.5px solid var(--color-border)",
+    fontSize: "11px",
+    fontWeight: 700,
     cursor: "pointer",
-    transition: "background var(--transition-fast), color var(--transition-fast)",
-    background: "transparent",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+    transition: "all var(--transition-fast)",
+    background: "var(--color-surface)",
   };
 
   return (
-    <div ref={cardRef} style={cardStyle}>
+    <div
+      ref={cardRef}
+      style={cardStyle}
+      onMouseEnter={(e) => {
+        if (isActive) {
+          e.currentTarget.style.transform = "translateY(-1px)";
+          e.currentTarget.style.boxShadow = "var(--shadow-md)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (isActive) {
+          e.currentTarget.style.transform = "none";
+          e.currentTarget.style.boxShadow = "var(--shadow-sm)";
+        }
+      }}
+    >
       {/* Token number */}
       <div
         className="tabular"
         style={{
-          width: 44,
-          height: 44,
+          width: 42,
+          height: 42,
           borderRadius: "var(--radius-md)",
-          background: patient.priorityFlag ? "var(--color-primary-glow)" : "var(--color-surface-3)",
-          border: `1px solid ${patient.priorityFlag ? "var(--color-primary)" : "var(--color-border)"}`,
+          background: patient.priorityFlag ? "var(--color-status-called-dim)" : "var(--color-surface-3)",
+          border: `1.5px solid ${patient.priorityFlag ? "var(--color-warning)" : "var(--color-border)"}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontFamily: "var(--font-display)",
-          fontWeight: 700,
+          fontWeight: 800,
           fontSize: "var(--text-base)",
-          color: patient.priorityFlag ? "var(--color-primary)" : "var(--color-text)",
+          color: patient.priorityFlag ? "var(--color-warning)" : "var(--color-text)",
           flexShrink: 0,
+          boxShadow: patient.priorityFlag ? "inset 0 1px 2px rgba(178,94,2,0.06)" : "none",
         }}
       >
         {patient.tokenNumber}
@@ -110,9 +139,9 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
 
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-1)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "2px" }}>
           <span style={{
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: "var(--text-sm)",
             color: "var(--color-text)",
             overflow: "hidden",
@@ -123,10 +152,14 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
           </span>
           {patient.priorityFlag && (
             <span style={{
-              fontSize: "var(--text-xs)",
-              color: "var(--color-primary)",
-              fontWeight: 700,
-              letterSpacing: "0.04em",
+              fontSize: "9px",
+              color: "var(--color-warning)",
+              background: "var(--color-status-called-dim)",
+              padding: "1px 6px",
+              borderRadius: "var(--radius-sm)",
+              border: "1px solid rgba(178,94,2,0.2)",
+              fontWeight: 800,
+              letterSpacing: "0.06em",
               textTransform: "uppercase",
             }}>
               Priority
@@ -136,14 +169,14 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
           <StatusPill status={patient.status} />
           {patient.status === PatientStatus.WAITING && patientStat && (
-            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-faint)" }}>
+            <span style={{ fontSize: "11px", fontWeight: 500, color: "var(--color-text-muted)" }}>
               {patientStat.tokensAhead === 0
                 ? "Next up"
-                : `~${formatWait(patientStat.estimatedWaitMs)} wait`}
+                : `•  ~${formatWait(patientStat.estimatedWaitMs)} wait`}
             </span>
           )}
           {patient.phone && (
-            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-faint)" }}>
+            <span className="tabular" style={{ fontSize: "11px", color: "var(--color-text-faint)" }}>
               {patient.phone}
             </span>
           )}
@@ -156,8 +189,16 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
           {patient.status === PatientStatus.CALLED && (
             <button
               onClick={() => onStart(patient.id)}
-              style={{ ...btnBase, color: "var(--color-success)", borderColor: "var(--color-success)" }}
+              style={{ ...btnBase, color: "var(--color-success)", borderColor: "var(--color-success)", background: "var(--color-success-dim)" }}
               title="Start consultation"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-success)";
+                e.currentTarget.style.color = "var(--color-text-inverse)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "var(--color-success-dim)";
+                e.currentTarget.style.color = "var(--color-success)";
+              }}
             >
               Start
             </button>
@@ -167,6 +208,14 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
               onClick={() => onComplete(patient.id)}
               style={{ ...btnBase, color: "var(--color-success)", borderColor: "var(--color-success)", background: "var(--color-success-dim)" }}
               title="Mark complete"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-success)";
+                e.currentTarget.style.color = "var(--color-text-inverse)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "var(--color-success-dim)";
+                e.currentTarget.style.color = "var(--color-success)";
+              }}
             >
               Complete ✓
             </button>
@@ -174,16 +223,36 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
           {(patient.status === PatientStatus.WAITING || patient.status === PatientStatus.CALLED) && (
             <button
               onClick={() => onSkip(patient.id)}
-              style={{ ...btnBase, color: "var(--color-status-skipped)" }}
+              style={{ ...btnBase, color: "var(--color-status-skipped)", borderColor: "var(--color-status-skipped-dim)" }}
               title="Skip patient"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-status-skipped)";
+                e.currentTarget.style.color = "var(--color-text-inverse)";
+                e.currentTarget.style.borderColor = "var(--color-status-skipped)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "var(--color-surface)";
+                e.currentTarget.style.color = "var(--color-status-skipped)";
+                e.currentTarget.style.borderColor = "var(--color-status-skipped-dim)";
+              }}
             >
               Skip
             </button>
           )}
           <button
             onClick={() => onCancel(patient.id)}
-            style={{ ...btnBase, color: "var(--color-error)" }}
+            style={{ ...btnBase, color: "var(--color-error)", borderColor: "var(--color-error-dim)", padding: "var(--space-1) var(--space-2)" }}
             title="Cancel"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--color-error)";
+              e.currentTarget.style.color = "var(--color-text-inverse)";
+              e.currentTarget.style.borderColor = "var(--color-error)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "var(--color-surface)";
+              e.currentTarget.style.color = "var(--color-error)";
+              e.currentTarget.style.borderColor = "var(--color-error-dim)";
+            }}
           >
             ✕
           </button>

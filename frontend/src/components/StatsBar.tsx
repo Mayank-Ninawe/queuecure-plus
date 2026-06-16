@@ -5,14 +5,18 @@ interface Props {
   stats: QueueStats | null;
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function StatItem({ label, value, showBorder = true }: { label: string; value: string; showBorder?: boolean }) {
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{
+      textAlign: "center",
+      borderRight: showBorder ? "1.5px solid var(--color-divider)" : "none",
+      paddingRight: showBorder ? "var(--space-2)" : 0,
+    }}>
       <div
         className="tabular"
         style={{
-          fontSize: "var(--text-xl)",
-          fontWeight: 700,
+          fontSize: "var(--text-lg)",
+          fontWeight: 800,
           fontFamily: "var(--font-display)",
           color: "var(--color-primary)",
           lineHeight: 1.1,
@@ -20,7 +24,7 @@ function StatItem({ label, value }: { label: string; value: string }) {
       >
         {value}
       </div>
-      <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", marginTop: "var(--space-1)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+      <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--color-text-muted)", marginTop: "var(--space-2)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
         {label}
       </div>
     </div>
@@ -30,14 +34,12 @@ function StatItem({ label, value }: { label: string; value: string }) {
 export default function StatsBar({ stats }: Props) {
   return (
     <div
+      className="tactile-card"
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "var(--space-4)",
-        padding: "var(--space-5) var(--space-6)",
-        background: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-xl)",
+        gap: "var(--space-2)",
+        padding: "var(--space-5) var(--space-4)",
       }}
     >
       <StatItem
@@ -46,11 +48,12 @@ export default function StatsBar({ stats }: Props) {
       />
       <StatItem
         label="Avg Time"
-        value={stats ? (stats.avgConsultationMs ? formatMs(stats.avgConsultationMs) : "Calculating...") : "—"}
+        value={stats ? (stats.avgConsultationMs ? formatMs(stats.avgConsultationMs) : "—") : "—"}
       />
       <StatItem
         label="Now Serving"
         value={stats?.currentToken != null ? `#${stats.currentToken}` : "—"}
+        showBorder={false}
       />
     </div>
   );

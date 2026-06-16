@@ -47,55 +47,53 @@ export default function ActionButtons({
   const canComplete = !!inConsultationPatient && !disabled;
 
   const primaryBtn: React.CSSProperties = {
-    padding: "var(--space-4) var(--space-8)",
-    minHeight: "44px",
-    minWidth: "44px",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: "var(--radius-lg)",
-    border: "none",
-    fontFamily: "var(--font-display)",
-    fontWeight: 700,
-    fontSize: "var(--text-base)",
-    cursor: canCallNext ? "pointer" : "not-allowed",
-    background: canCallNext ? "var(--color-primary)" : "var(--color-surface-3)",
-    color: canCallNext ? "var(--color-text-inverse)" : "var(--color-text-faint)",
-    transition: "background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast)",
-    boxShadow: canCallNext ? "var(--shadow-amber)" : "none",
-    letterSpacing: "0.02em",
-  };
-
-  const secondaryBtn = (active: boolean, color: string): React.CSSProperties => ({
     padding: "var(--space-3) var(--space-6)",
-    minHeight: "44px",
-    minWidth: "44px",
+    minHeight: "46px",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "var(--radius-md)",
-    border: `1px solid ${active ? color : "var(--color-border)"}`,
-    background: active ? `${color}18` : "transparent",
+    border: "none",
+    fontFamily: "var(--font-display)",
+    fontWeight: 700,
+    fontSize: "var(--text-sm)",
+    cursor: canCallNext ? "pointer" : "not-allowed",
+    background: canCallNext ? "var(--color-primary)" : "var(--color-surface-3)",
+    color: canCallNext ? "var(--color-text-inverse)" : "var(--color-text-faint)",
+    transition: "all var(--transition-fast)",
+    boxShadow: canCallNext ? "var(--shadow-amber)" : "none",
+    letterSpacing: "0.03em",
+    textTransform: "uppercase",
+  };
+
+  const secondaryBtn = (active: boolean, color: string, activeDim: string): React.CSSProperties => ({
+    padding: "var(--space-3) var(--space-5)",
+    minHeight: "46px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "var(--radius-md)",
+    border: `1.5px solid ${active ? color : "var(--color-border)"}`,
+    background: active ? activeDim : "transparent",
     color: active ? color : "var(--color-text-faint)",
     fontFamily: "var(--font-display)",
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: "var(--text-sm)",
     cursor: active ? "pointer" : "not-allowed",
     transition: "all var(--transition-fast)",
-    letterSpacing: "0.02em",
+    letterSpacing: "0.03em",
+    textTransform: "uppercase",
   });
 
   return (
     <div
+      className="tactile-card"
       style={{
         display: "flex",
         flexWrap: "wrap",
         gap: "var(--space-3)",
         alignItems: "center",
         padding: "var(--space-5) var(--space-6)",
-        background: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-xl)",
       }}
     >
       {/* Call Next — primary action */}
@@ -104,11 +102,23 @@ export default function ActionButtons({
         disabled={!canCallNext}
         style={primaryBtn}
         title="Call next patient [Space]"
-        onMouseEnter={(e) => { if (canCallNext) (e.currentTarget.style.boxShadow = "var(--shadow-amber-lg)"); }}
-        onMouseLeave={(e) => { (e.currentTarget.style.boxShadow = canCallNext ? "var(--shadow-amber)" : "none"); }}
+        onMouseEnter={(e) => {
+          if (canCallNext) {
+            e.currentTarget.style.background = "var(--color-primary-hover)";
+            e.currentTarget.style.boxShadow = "var(--shadow-amber-lg)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (canCallNext) {
+            e.currentTarget.style.background = "var(--color-primary)";
+            e.currentTarget.style.boxShadow = "var(--shadow-amber)";
+            e.currentTarget.style.transform = "none";
+          }
+        }}
       >
         Call Next
-        <span style={{ marginLeft: "var(--space-2)", fontSize: "var(--text-xs)", fontWeight: 400, opacity: 0.7 }}>
+        <span style={{ marginLeft: "var(--space-2)", fontSize: "10px", fontWeight: 500, opacity: 0.8 }}>
           [Space]
         </span>
       </button>
@@ -117,8 +127,20 @@ export default function ActionButtons({
       <button
         onClick={() => calledPatient && onStart(calledPatient.id)}
         disabled={!canStart}
-        style={secondaryBtn(canStart, "var(--color-success)")}
+        style={secondaryBtn(canStart, "var(--color-success)", "var(--color-success-dim)")}
         title={`Start consultation${calledPatient ? ` for #${calledPatient.tokenNumber}` : ""} [S]`}
+        onMouseEnter={(e) => {
+          if (canStart) {
+            e.currentTarget.style.background = "rgba(12, 106, 67, 0.1)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (canStart) {
+            e.currentTarget.style.background = "var(--color-success-dim)";
+            e.currentTarget.style.transform = "none";
+          }
+        }}
       >
         Start [S]
       </button>
@@ -127,15 +149,27 @@ export default function ActionButtons({
       <button
         onClick={() => inConsultationPatient && onComplete(inConsultationPatient.id)}
         disabled={!canComplete}
-        style={secondaryBtn(canComplete, "var(--color-info)")}
+        style={secondaryBtn(canComplete, "var(--color-info)", "var(--color-info-dim)")}
         title={`Mark complete${inConsultationPatient ? ` for #${inConsultationPatient.tokenNumber}` : ""} [C]`}
+        onMouseEnter={(e) => {
+          if (canComplete) {
+            e.currentTarget.style.background = "rgba(26, 95, 180, 0.1)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (canComplete) {
+            e.currentTarget.style.background = "var(--color-info-dim)";
+            e.currentTarget.style.transform = "none";
+          }
+        }}
       >
         Complete [C]
       </button>
 
       {/* Shortcut hint */}
-      <span style={{ marginLeft: "auto", fontSize: "var(--text-xs)", color: "var(--color-text-faint)" }}>
-        Alt+N to focus name field
+      <span style={{ marginLeft: "auto", fontSize: "11px", fontWeight: 600, color: "var(--color-text-faint)", letterSpacing: "0.02em" }}>
+        Alt+N to focus check-in pad
       </span>
     </div>
   );

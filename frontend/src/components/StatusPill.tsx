@@ -45,8 +45,16 @@ export default function StatusPill({ status }: Props) {
   return (
     <span
       className="status-pill"
-      style={{ color: cfg.color, background: cfg.bg }}
+      style={{
+        color: cfg.color,
+        background: cfg.bg,
+        border: `1.5px solid ${cfg.color}15`,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+      }}
     >
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: cfg.color, display: "inline-block" }} />
       {cfg.label}
     </span>
   );

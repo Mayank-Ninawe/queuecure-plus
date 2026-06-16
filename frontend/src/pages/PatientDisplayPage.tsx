@@ -61,21 +61,23 @@ export default function PatientDisplayPage() {
         {/* Header */}
         <header
           style={{
-            padding: "var(--space-4) var(--space-6)",
-            borderBottom: "1px solid var(--color-border)",
+            padding: "var(--space-4) var(--space-8)",
+            borderBottom: "1.5px solid var(--color-border)",
             display: "flex",
             alignItems: "center",
             gap: "var(--space-3)",
             background: "var(--color-surface)",
+            boxShadow: "var(--shadow-sm)",
           }}
         >
-          <Logo size={24} />
+          <Logo size={26} />
           <span
             style={{
               fontFamily: "var(--font-display)",
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: "var(--text-base)",
               color: "var(--color-text)",
+              letterSpacing: "-0.02em",
             }}
           >
             QueueCure<span style={{ color: "var(--color-primary)" }}>+</span>
@@ -83,16 +85,18 @@ export default function PatientDisplayPage() {
           <span
             style={{
               marginLeft: "var(--space-2)",
-              fontSize: "var(--text-xs)",
-              color: "var(--color-text-faint)",
-              padding: "2px var(--space-2)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-sm)",
+              fontSize: "10px",
+              color: "var(--color-text-muted)",
+              padding: "3px var(--space-3)",
+              background: "var(--color-surface-3)",
+              border: "1.5px solid var(--color-border)",
+              borderRadius: "var(--radius-md)",
               textTransform: "uppercase",
-              letterSpacing: "0.06em",
+              letterSpacing: "0.08em",
+              fontWeight: 700,
             }}
           >
-            Waiting Room
+            Patient waiting board
           </span>
 
           {/* Live indicator */}
@@ -115,7 +119,7 @@ export default function PatientDisplayPage() {
                     : "var(--color-error)",
                 boxShadow:
                   connectionStatus === "connected"
-                    ? "0 0 6px var(--color-success)"
+                    ? "0 0 8px var(--color-success)"
                     : "none",
                 animation:
                   connectionStatus === "connected"
@@ -125,17 +129,17 @@ export default function PatientDisplayPage() {
             />
             <span
               style={{
-                fontSize: "var(--text-xs)",
+                fontSize: "10px",
                 color:
                   connectionStatus === "connected"
                     ? "var(--color-success)"
                     : "var(--color-error)",
-                fontWeight: 600,
+                fontWeight: 700,
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
               }}
             >
-              {connectionStatus === "connected" ? "Live" : connectionStatus}
+              {connectionStatus === "connected" ? "Live Sync" : "Disconnected"}
             </span>
           </div>
         </header>
@@ -148,13 +152,16 @@ export default function PatientDisplayPage() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: "var(--space-8) var(--space-6)",
+            padding: "var(--space-12) var(--space-6)",
             gap: "var(--space-10)",
+            maxWidth: "var(--content-wide)",
+            width: "100%",
+            margin: "0 auto",
           }}
         >
           {isLoading ? (
-            <div style={{ color: "var(--color-text-faint)", fontSize: "var(--text-sm)" }}>
-              Connecting…
+            <div style={{ color: "var(--color-text-faint)", fontSize: "var(--text-sm)", fontWeight: 600 }}>
+              Connecting to clinic display queue...
             </div>
           ) : (
             <>
@@ -166,31 +173,30 @@ export default function PatientDisplayPage() {
                   alignItems: "flex-end",
                   flexWrap: "wrap",
                   justifyContent: "center",
+                  width: "100%",
                 }}
               >
                 {activePatients.length === 0 ? (
                   <div
+                    className="tactile-card"
                     style={{
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      padding: "var(--space-8)",
-                      background: "var(--color-surface-2)",
-                      border: "2px dashed var(--color-border)",
-                      borderRadius: "var(--radius-2xl)",
-                      maxWidth: "400px",
+                      padding: "var(--space-12) var(--space-8)",
+                      maxWidth: "460px",
                       width: "100%",
                       textAlign: "center",
-                      gap: "var(--space-3)",
+                      gap: "var(--space-4)",
                     }}
                   >
-                    <span style={{ fontSize: "2.5rem" }}>📭</span>
-                    <h3 style={{ fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--color-text)" }}>
-                      No Active Patients
+                    <span style={{ fontSize: "3rem" }}>🏥</span>
+                    <h3 style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Queue is Clear
                     </h3>
                     <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-                      No active patients right now. The clinic queue is currently empty.
+                      There are no active patients in the queue right now. Please check in with the receptionist pad.
                     </p>
                   </div>
                 ) : (
@@ -210,27 +216,25 @@ export default function PatientDisplayPage() {
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
-                          gap: "var(--space-3)",
+                          gap: "var(--space-4)",
                         }}
                       >
                         <p
                           style={{
-                            fontSize: "var(--text-xs)",
+                            fontSize: "11px",
                             color: "var(--color-text-muted)",
                             textTransform: "uppercase",
-                            letterSpacing: "0.12em",
-                            fontWeight: 600,
+                            letterSpacing: "0.1em",
+                            fontWeight: 700,
                           }}
                         >
                           Now Serving
                         </p>
                         <div
+                          className="recessed-panel"
                           style={{
-                            width: "clamp(160px, 20vw, 240px)",
-                            height: "clamp(160px, 20vw, 240px)",
-                            borderRadius: "var(--radius-2xl)",
-                            background: "var(--color-surface-2)",
-                            border: "2px dashed var(--color-border)",
+                            width: "clamp(180px, 20vw, 240px)",
+                            height: "clamp(180px, 20vw, 240px)",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
@@ -239,9 +243,9 @@ export default function PatientDisplayPage() {
                             textAlign: "center",
                           }}
                         >
-                          <span style={{ fontSize: "var(--text-2xl)", marginBottom: "var(--space-2)" }}>😴</span>
-                          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-muted)" }}>
-                            No active patients right now
+                          <span style={{ fontSize: "1.8rem", marginBottom: "var(--space-2)" }}>😴</span>
+                          <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)" }}>
+                            Doctor is currently between sessions
                           </span>
                         </div>
                       </div>
@@ -254,7 +258,7 @@ export default function PatientDisplayPage() {
                         label="Please Proceed"
                         size="medium"
                         color="var(--color-status-called)"
-                        glowColor="0 0 32px rgba(245,158,11,0.25)"
+                        glowColor="0 8px 24px rgba(178, 94, 2, 0.16)"
                       />
                     ) : (
                       <div
@@ -262,38 +266,36 @@ export default function PatientDisplayPage() {
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
-                          gap: "var(--space-3)",
+                          gap: "var(--space-4)",
                         }}
                       >
                         <p
                           style={{
-                            fontSize: "var(--text-xs)",
+                            fontSize: "11px",
                             color: "var(--color-text-muted)",
                             textTransform: "uppercase",
-                            letterSpacing: "0.12em",
-                            fontWeight: 600,
+                            letterSpacing: "0.1em",
+                            fontWeight: 700,
                           }}
                         >
                           Please Proceed
                         </p>
                         <div
+                          className="recessed-panel"
                           style={{
-                            width: "clamp(100px, 12vw, 140px)",
-                            height: "clamp(100px, 12vw, 140px)",
-                            borderRadius: "var(--radius-2xl)",
-                            background: "var(--color-surface-2)",
-                            border: "2px dashed var(--color-border)",
+                            width: "clamp(120px, 12vw, 160px)",
+                            height: "clamp(120px, 12vw, 160px)",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
-                            padding: "var(--space-2)",
+                            padding: "var(--space-3)",
                             textAlign: "center",
                           }}
                         >
-                          <span style={{ fontSize: "var(--text-xl)", marginBottom: "var(--space-1)" }}>⏳</span>
-                          <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-text-faint)" }}>
-                            No one called
+                          <span style={{ fontSize: "1.4rem", marginBottom: "var(--space-1)" }}>⏳</span>
+                          <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-faint)", textTransform: "uppercase" }}>
+                            Waiting for Call
                           </span>
                         </div>
                       </div>
@@ -307,27 +309,43 @@ export default function PatientDisplayPage() {
                 {calledToken != null && (
                   <motion.div
                     key="call-alert"
-                    initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                    initial={{ opacity: 0, y: 16, scale: 0.97 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    exit={{ opacity: 0, y: -10, scale: 0.97 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
                     style={{
-                      background: "var(--color-primary-dim)",
-                      border: "1px solid var(--color-primary)",
+                      background: "var(--color-status-called-dim)",
+                      border: "1.5px solid var(--color-status-called)",
                       borderRadius: "var(--radius-xl)",
                       padding: "var(--space-4) var(--space-8)",
                       textAlign: "center",
+                      boxShadow: "var(--shadow-md)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "var(--space-3)",
+                      justifyContent: "center",
                     }}
                   >
+                    <span
+                      style={{
+                        width: 8,
+                        height: 8,
+                        background: "var(--color-status-called)",
+                        borderRadius: "var(--radius-full)",
+                        animation: "pulse 1.2s ease-in-out infinite",
+                      }}
+                    />
                     <p
                       style={{
                         fontFamily: "var(--font-display)",
                         fontWeight: 700,
-                        fontSize: "var(--text-lg)",
-                        color: "var(--color-primary)",
+                        fontSize: "var(--text-base)",
+                        color: "var(--color-status-called)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.02em",
                       }}
                     >
-                      Token #{calledToken} — Please proceed to the doctor's room
+                      Token #{calledToken} — Please proceed to doctor's consultation desk
                     </p>
                   </motion.div>
                 )}
@@ -339,38 +357,42 @@ export default function PatientDisplayPage() {
               {/* Recently completed */}
               {recentDone.length > 0 && (
                 <div
+                  className="tactile-card"
                   style={{
                     width: "100%",
                     maxWidth: 640,
                     display: "flex",
                     flexDirection: "column",
                     gap: "var(--space-3)",
+                    padding: "var(--space-5) var(--space-6)",
                   }}
                 >
                   <p
                     style={{
-                      fontSize: "var(--text-xs)",
-                      color: "var(--color-text-faint)",
+                      fontSize: "10px",
+                      color: "var(--color-text-muted)",
                       textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      fontWeight: 600,
+                      letterSpacing: "0.08em",
+                      fontWeight: 700,
+                      borderBottom: "1.5px solid var(--color-divider)",
+                      paddingBottom: "var(--space-1)",
                     }}
                   >
-                    Recently Completed
+                    Recently Completed Consultations
                   </p>
-                  <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", paddingTop: "var(--space-1)" }}>
                     {recentDone.map((p) => (
                       <span
                         key={p.id}
                         className="tabular"
                         style={{
                           padding: "var(--space-1) var(--space-3)",
-                          borderRadius: "var(--radius-full)",
-                          background: "var(--color-status-completed-dim)",
-                          color: "var(--color-status-completed)",
+                          borderRadius: "var(--radius-md)",
+                          background: "var(--color-surface-3)",
+                          color: "var(--color-text-muted)",
                           fontSize: "var(--text-sm)",
-                          fontWeight: 600,
-                          border: "1px solid var(--color-border)",
+                          fontWeight: 700,
+                          border: "1.5px solid var(--color-border)",
                         }}
                       >
                         #{p.tokenNumber}

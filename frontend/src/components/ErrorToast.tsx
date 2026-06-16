@@ -20,21 +20,21 @@ export default function ErrorToast({ message, onDismiss }: Props) {
             left: "50%",
             transform: "translateX(-50%)",
             background: "var(--color-error-dim)",
-            border: "1px solid var(--color-error)",
+            border: "1.5px solid var(--color-error)",
             color: "var(--color-error)",
             padding: "var(--space-3) var(--space-6)",
-            borderRadius: "var(--radius-lg)",
+            borderRadius: "var(--radius-md)",
             fontSize: "var(--text-sm)",
-            fontWeight: 500,
+            fontWeight: 700,
             zIndex: 1000,
             display: "flex",
             alignItems: "center",
             gap: "var(--space-3)",
-            boxShadow: "var(--shadow-lg)",
+            boxShadow: "var(--shadow-md)",
             whiteSpace: "nowrap",
           }}
         >
-          <span>⚠ {message}</span>
+          <span>⚠ error: {message}</span>
           <button
             onClick={onDismiss}
             aria-label="Dismiss error"

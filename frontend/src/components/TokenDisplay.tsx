@@ -48,44 +48,47 @@ export default function TokenDisplay({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "var(--space-3)",
+        gap: "var(--space-4)",
       }}
     >
       <p
         style={{
-          fontSize: "var(--text-xs)",
+          fontSize: "11px",
           color: "var(--color-text-muted)",
           textTransform: "uppercase",
-          letterSpacing: "0.12em",
-          fontWeight: 600,
+          letterSpacing: "0.1em",
+          fontWeight: 700,
         }}
       >
         {label}
       </p>
 
       <div
+        className="tactile-card"
         style={{
-          width: isLarge ? "clamp(160px, 20vw, 240px)" : "clamp(100px, 12vw, 140px)",
-          height: isLarge ? "clamp(160px, 20vw, 240px)" : "clamp(100px, 12vw, 140px)",
+          width: isLarge ? "clamp(180px, 20vw, 240px)" : "clamp(120px, 12vw, 160px)",
+          height: isLarge ? "clamp(180px, 20vw, 240px)" : "clamp(120px, 12vw, 160px)",
           borderRadius: "var(--radius-2xl)",
-          background: "var(--color-surface-2)",
-          border: `2px solid ${tokenNumber != null ? color : "var(--color-border)"}`,
-          boxShadow: tokenNumber != null ? glowColor : "none",
+          background: "var(--color-surface)",
+          border: `3px solid ${tokenNumber != null ? color : "var(--color-border)"}`,
+          boxShadow: tokenNumber != null
+            ? `var(--shadow-md), ${glowColor}`
+            : "var(--shadow-sm), inset 0 2px 4px rgba(35, 38, 41, 0.03)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: "border-color var(--transition-slow), box-shadow var(--transition-slow)",
+          transition: "all var(--transition-slow)",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Subtle radial glow inside box */}
+        {/* Subtle radial glow inside box simulating backlit screen */}
         {tokenNumber != null && (
           <div
             style={{
               position: "absolute",
               inset: 0,
-              background: `radial-gradient(circle at 50% 40%, ${color}18 0%, transparent 70%)`,
+              background: `radial-gradient(circle at 50% 45%, ${color}12 0%, transparent 75%)`,
               pointerEvents: "none",
             }}
           />
@@ -98,11 +101,11 @@ export default function TokenDisplay({
             fontFamily: "var(--font-display)",
             fontWeight: 800,
             fontSize: isLarge
-              ? "clamp(3.5rem, 8vw, 6rem)"
-              : "clamp(2rem, 5vw, 3.5rem)",
+              ? "clamp(4rem, 8vw, 7rem)"
+              : "clamp(2.25rem, 5vw, 4rem)",
             color: tokenNumber != null ? color : "var(--color-text-faint)",
             lineHeight: 1,
-            letterSpacing: "-0.03em",
+            letterSpacing: "-0.04em",
           }}
         >
           {tokenNumber ?? "—"}
