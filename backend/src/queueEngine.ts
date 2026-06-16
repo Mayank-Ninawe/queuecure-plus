@@ -112,7 +112,7 @@ export function callNext(state: QueueState): EngineResult {
   // Find the next WAITING patient (lowest tokenNumber)
   const waitingPatients = state.patients
     .filter((p) => p.status === PatientStatus.WAITING)
-    .sort((a, b) => a.tokenNumber - b.tokenNumber);
+    .sort((a, b) => (a.priorityFlag === b.priorityFlag ? a.tokenNumber - b.tokenNumber : a.priorityFlag ? -1 : 1));
 
   if (waitingPatients.length === 0) {
     return { success: false, error: "No patients waiting in queue." };
@@ -297,7 +297,7 @@ export function getQueueStats(state: QueueState): QueueStats {
 
   const waitingPatients = patients
     .filter((p) => p.status === PatientStatus.WAITING)
-    .sort((a, b) => a.tokenNumber - b.tokenNumber);
+    .sort((a, b) => (a.priorityFlag === b.priorityFlag ? a.tokenNumber - b.tokenNumber : a.priorityFlag ? -1 : 1));
 
   const perPatient: PatientStats[] = waitingPatients.map((p, index) => ({
     patientId: p.id,

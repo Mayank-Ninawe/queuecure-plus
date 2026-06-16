@@ -10,3 +10,5 @@ services:
         value: 4000
       - key: FRONTEND_URL
         value: https://queuecure-plus.vercel.app
+      - key: RESET_SECRET
+        value: change_this_secret_in_render_dashboard

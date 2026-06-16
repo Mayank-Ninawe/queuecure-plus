@@ -74,7 +74,14 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 
-app.post("/reset", (_req: Request, res: Response) => {
+app.post("/reset", (req: Request, res: Response) => {
+  const resetSecret = process.env.RESET_SECRET;
+  const { secret } = req.body;
+
+  if (!resetSecret || secret !== resetSecret) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
   stateRef.current = createSession();
   const stats = getQueueStats(stateRef.current);
 

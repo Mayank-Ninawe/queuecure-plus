@@ -28,6 +28,7 @@ export default function PatientDisplayPage() {
     isLoading,
     calledPatient,
     inConsultationPatient,
+    activePatients,
   } = useQueue();
 
   // The "now serving" is whoever is IN_CONSULTATION
@@ -167,23 +168,138 @@ export default function PatientDisplayPage() {
                   justifyContent: "center",
                 }}
               >
-                {/* Now Serving — large */}
-                <TokenDisplay
-                  tokenNumber={nowServingToken}
-                  label="Now Serving"
-                  size="large"
-                  color="var(--color-primary)"
-                  glowColor="var(--shadow-amber-lg)"
-                />
+                {activePatients.length === 0 ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "var(--space-8)",
+                      background: "var(--color-surface-2)",
+                      border: "2px dashed var(--color-border)",
+                      borderRadius: "var(--radius-2xl)",
+                      maxWidth: "400px",
+                      width: "100%",
+                      textAlign: "center",
+                      gap: "var(--space-3)",
+                    }}
+                  >
+                    <span style={{ fontSize: "2.5rem" }}>📭</span>
+                    <h3 style={{ fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--color-text)" }}>
+                      No Active Patients
+                    </h3>
+                    <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+                      No active patients right now. The clinic queue is currently empty.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Now Serving — large */}
+                    {nowServingToken !== null ? (
+                      <TokenDisplay
+                        tokenNumber={nowServingToken}
+                        label="Now Serving"
+                        size="large"
+                        color="var(--color-primary)"
+                        glowColor="var(--shadow-amber-lg)"
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "var(--space-3)",
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontSize: "var(--text-xs)",
+                            color: "var(--color-text-muted)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.12em",
+                            fontWeight: 600,
+                          }}
+                        >
+                          Now Serving
+                        </p>
+                        <div
+                          style={{
+                            width: "clamp(160px, 20vw, 240px)",
+                            height: "clamp(160px, 20vw, 240px)",
+                            borderRadius: "var(--radius-2xl)",
+                            background: "var(--color-surface-2)",
+                            border: "2px dashed var(--color-border)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "var(--space-4)",
+                            textAlign: "center",
+                          }}
+                        >
+                          <span style={{ fontSize: "var(--text-2xl)", marginBottom: "var(--space-2)" }}>😴</span>
+                          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-muted)" }}>
+                            No active patients right now
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                {/* Called / Next Up — medium */}
-                <TokenDisplay
-                  tokenNumber={calledToken}
-                  label="Please Proceed"
-                  size="medium"
-                  color="var(--color-status-called)"
-                  glowColor="0 0 32px rgba(245,158,11,0.25)"
-                />
+                    {/* Called / Next Up — medium */}
+                    {calledToken !== null ? (
+                      <TokenDisplay
+                        tokenNumber={calledToken}
+                        label="Please Proceed"
+                        size="medium"
+                        color="var(--color-status-called)"
+                        glowColor="0 0 32px rgba(245,158,11,0.25)"
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "var(--space-3)",
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontSize: "var(--text-xs)",
+                            color: "var(--color-text-muted)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.12em",
+                            fontWeight: 600,
+                          }}
+                        >
+                          Please Proceed
+                        </p>
+                        <div
+                          style={{
+                            width: "clamp(100px, 12vw, 140px)",
+                            height: "clamp(100px, 12vw, 140px)",
+                            borderRadius: "var(--radius-2xl)",
+                            background: "var(--color-surface-2)",
+                            border: "2px dashed var(--color-border)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "var(--space-2)",
+                            textAlign: "center",
+                          }}
+                        >
+                          <span style={{ fontSize: "var(--text-xl)", marginBottom: "var(--space-1)" }}>⏳</span>
+                          <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-text-faint)" }}>
+                            No one called
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Alert when a patient is being called */}

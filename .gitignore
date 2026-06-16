@@ -23,3 +23,6 @@ Thumbs.db
 
 # Render / Vercel
 .vercel/
+
+# TypeScript build files
+*.tsbuildinfo

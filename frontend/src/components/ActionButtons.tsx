@@ -27,7 +27,7 @@ export default function ActionButtons({
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 
-      if (e.code === "Space") {
+      if (e.code === "Space" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName ?? "")) {
         e.preventDefault();
         if (waitingCount > 0 && !calledPatient) onCallNext();
       }
@@ -48,6 +48,11 @@ export default function ActionButtons({
 
   const primaryBtn: React.CSSProperties = {
     padding: "var(--space-4) var(--space-8)",
+    minHeight: "44px",
+    minWidth: "44px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: "var(--radius-lg)",
     border: "none",
     fontFamily: "var(--font-display)",
@@ -63,6 +68,11 @@ export default function ActionButtons({
 
   const secondaryBtn = (active: boolean, color: string): React.CSSProperties => ({
     padding: "var(--space-3) var(--space-6)",
+    minHeight: "44px",
+    minWidth: "44px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: "var(--radius-md)",
     border: `1px solid ${active ? color : "var(--color-border)"}`,
     background: active ? `${color}18` : "transparent",

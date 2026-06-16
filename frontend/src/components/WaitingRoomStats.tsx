@@ -76,7 +76,7 @@ export default function WaitingRoomStats({ stats }: Props) {
               lineHeight: 1,
             }}
           >
-            {stats ? formatMs(stats.avgConsultationMs) : "—"}
+            {stats ? (stats.avgConsultationMs ? formatMs(stats.avgConsultationMs) : "Calculating...") : "—"}
           </span>
           <span
             style={{

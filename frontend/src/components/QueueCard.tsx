@@ -69,7 +69,12 @@ export default function QueueCard({ patient, stats, index, onStart, onComplete, 
   };
 
   const btnBase: React.CSSProperties = {
-    padding: "var(--space-1) var(--space-3)",
+    padding: "var(--space-2) var(--space-4)",
+    minHeight: "44px",
+    minWidth: "44px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: "var(--radius-sm)",
     border: "1px solid var(--color-border)",
     fontSize: "var(--text-xs)",

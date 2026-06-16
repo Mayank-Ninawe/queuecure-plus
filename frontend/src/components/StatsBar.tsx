@@ -46,7 +46,7 @@ export default function StatsBar({ stats }: Props) {
       />
       <StatItem
         label="Avg Time"
-        value={stats ? formatMs(stats.avgConsultationMs) : "—"}
+        value={stats ? (stats.avgConsultationMs ? formatMs(stats.avgConsultationMs) : "Calculating...") : "—"}
       />
       <StatItem
         label="Now Serving"

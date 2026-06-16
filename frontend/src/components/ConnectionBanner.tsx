@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConnectionStatus } from "../lib/types";
 
@@ -25,10 +26,26 @@ const config: Record<ConnectionStatus, { label: string; bg: string; color: strin
 };
 
 export default function ConnectionBanner({ status }: Props) {
+  const [showColdStart, setShowColdStart] = useState(false);
+
+  useEffect(() => {
+    if (status === "connecting" || status === "error") {
+      const timer = setTimeout(() => {
+        setShowColdStart(true);
+      }, 3000);
+      return () => {
+        clearTimeout(timer);
+      };
+    } else {
+      setShowColdStart(false);
+    }
+  }, [status]);
+
   const cfg = config[status];
+
   return (
     <AnimatePresence>
-      {cfg && (
+      {(cfg || (showColdStart && status !== "connected")) && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
@@ -36,19 +53,36 @@ export default function ConnectionBanner({ status }: Props) {
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           style={{ overflow: "hidden" }}
         >
-          <div
-            style={{
-              background: cfg.bg,
-              color: cfg.color,
-              textAlign: "center",
-              padding: "var(--space-2) var(--space-4)",
-              fontSize: "var(--text-sm)",
-              fontWeight: 500,
-              borderBottom: "1px solid var(--color-border)",
-            }}
-          >
-            {cfg.label}
-          </div>
+          {showColdStart && status !== "connected" && (
+            <div
+              style={{
+                background: "rgba(245, 158, 11, 0.15)",
+                color: "var(--color-primary)",
+                textAlign: "center",
+                padding: "var(--space-2) var(--space-4)",
+                fontSize: "var(--text-sm)",
+                fontWeight: 600,
+                borderBottom: "1px solid var(--color-border)",
+              }}
+            >
+              ⏳ Backend is waking up, please wait ~15 seconds...
+            </div>
+          )}
+          {cfg && (
+            <div
+              style={{
+                background: cfg.bg,
+                color: cfg.color,
+                textAlign: "center",
+                padding: "var(--space-2) var(--space-4)",
+                fontSize: "var(--text-sm)",
+                fontWeight: 500,
+                borderBottom: "1px solid var(--color-border)",
+              }}
+            >
+              {cfg.label}
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
